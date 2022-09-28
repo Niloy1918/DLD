@@ -10,9 +10,10 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt
 import json
 from fractions import Fraction
+from django.http import JsonResponse
 
 # @csrf_exempt
-@method_decorator(csrf_exempt, name='dispatch')
+# @method_decorator(csrf_exempt, name='dispatch')
 class DeviceInformationViewset(APIView):
     queryset = DeviceInformation.objects.all()
     serializer_class = DeviceInformationSerializer
@@ -32,9 +33,9 @@ class DeviceInformationViewset(APIView):
             deviceInformation = self.get_queryset()
             serializer = DeviceInformationSerializer(deviceInformation,many=True)
 
-        return Response(serializer.data)
+        return JsonResponse({"data":serializer.data})
     
-    @csrf_exempt
+    # @csrf_exempt
     def post(self, request, *args, **kwargs):
         deviceInformationData =  json.loads(request.body.decode('UTF-8'))
         # print (deviceInformationData)
