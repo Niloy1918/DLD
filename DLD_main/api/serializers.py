@@ -6,7 +6,7 @@ from api.models import DeviceInformation,Statuslist,InformationLog
 class DeviceInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceInformation
-        fields = ["deviceId","inflow","outflow","inPressure","outPressure","temperature","differential","created_at","updated_at"]
+        fields = ["id","deviceId","inflow","outflow","inPressure","outPressure","temperature","differential","created_at","updated_at"]
 
 class StatuslistSerializer(serializers.ModelSerializer):
     deviceId=serializers.SerializerMethodField()
