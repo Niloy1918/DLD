@@ -9,6 +9,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.csrf import csrf_exempt
 import json
+import random
+import string
 from fractions import Fraction
 from django.http import JsonResponse
 
@@ -20,7 +22,7 @@ class DeviceInformationViewset(APIView):
     renderer_classes = [JSONRenderer]
     # print(queryset)
     def get_queryset(self):
-        deviceInfromation = DeviceInformation.objects.all()
+        deviceInfromation = DeviceInformation.objects.all().order_by('-id')
         return deviceInfromation
 
     def get(self, request, *args, **kwargs):
@@ -42,50 +44,62 @@ class DeviceInformationViewset(APIView):
 
 
     def post(self, request, *args, **kwargs):
-        deviceInformationData =  json.loads(request.body.decode('UTF-8'))
-        # print (deviceInformationData)
-        # return Response(deviceInformationData['inflow'])
-        # inlet_flow_sensor_data = float(deviceInformationData['inflow'])
-        # outlet_flow_sensor_data = float(deviceInformationData['outflow'])
-        # inlet_pressure_sensor_data = Fraction(deviceInformationData['inPressure'])
-        # outlet_pressure_sensor_data = Fraction(deviceInformationData['outPressure'])
-        offset1 = 0.483
-        offset2 = 0.339
-        # ratio = Fraction(inlet_pressure_sensor_data, outlet_pressure_sensor_data).limit_denominator()
-        # differential = (ratio.numerator/10**6)/(ratio.denominator / 10**6)
-        # print(deviceInformationData)
-        # inflow_value = (inlet_flow_sensor_data * (60/7.5))
-        # print(inflow_value)
-        # outflow_value = (outlet_flow_sensor_data * (60/7.5))
-        # inPressure_value = (inlet_pressure_sensor_data - offset1) * 250 
-        # outPressure_value = (outlet_pressure_sensor_data - offset2) * 250
-        # temperature = 89
+        array =  json.loads(request.body.decode('UTF-8'))
+        for deviceInformationData in array:
+            # print (deviceInformationData)
+            # return Response(deviceInformationData['inflow'])
+            # inlet_flow_sensor_data = float(deviceInformationData['inflow'])
+            # outlet_flow_sensor_data = float(deviceInformationData['outflow'])
+            # inlet_pressure_sensor_data = Fraction(deviceInformationData['inPressure'])
+            # outlet_pressure_sensor_data = Fraction(deviceInformationData['outPressure'])
+            offset1 = 0.483
+            offset2 = 0.339
+            # ratio = Fraction(inlet_pressure_sensor_data, outlet_pressure_sensor_data).limit_denominator()
+            # differential = (ratio.numerator/10**6)/(ratio.denominator / 10**6)
+            # print(deviceInformationData)
+            # inflow_value = (inlet_flow_sensor_data * (60/7.5))
+            # print(inflow_value)
+            # outflow_value = (outlet_flow_sensor_data * (60/7.5))
+            # inPressure_value = (inlet_pressure_sensor_data - offset1) * 250 
+            # outPressure_value = (outlet_pressure_sensor_data - offset2) * 250
+            # temperature = 89
 
-        newDeviceinformation = DeviceInformation.objects.all()
-        newDeviceinformation.deviceId = deviceInformationData['deviceId']
-        newDeviceinformation.inflow = deviceInformationData['inflow']
-        newDeviceinformation.outflow = deviceInformationData['outflow']
-        newDeviceinformation.inPressure = deviceInformationData['inPressure']
-        newDeviceinformation.outPressure = deviceInformationData['outPressure']
-        newDeviceinformation.temperature = deviceInformationData['temperature']
-        newDeviceinformation.differential = deviceInformationData['differential']
-        newDeviceinformation.offset = 0
-        
-        # print(newDeviceinformation)
-        
-        device_information = DeviceInformation.objects.create (
-            deviceId=deviceInformationData['deviceId'],
-            inflow = deviceInformationData['inflow'],
-            outflow = deviceInformationData['outflow'],
-            inPressure = deviceInformationData['inPressure'],
-            outPressure = deviceInformationData['outPressure'],
-            temperature = deviceInformationData['temperature'],
-            differential = deviceInformationData['differential'],
-            offset = 0
-            )
-        device_information.save()
+            newDeviceinformation = DeviceInformation.objects.all()
+            newDeviceinformation.deviceId = deviceInformationData['deviceId']
+            newDeviceinformation.inflow = deviceInformationData['inflow']
+            newDeviceinformation.outflow = deviceInformationData['outflow']
+            newDeviceinformation.inPressure = deviceInformationData['inPressure']
+            newDeviceinformation.outPressure = deviceInformationData['outPressure']
+            newDeviceinformation.temperature = deviceInformationData['temperature']
+            newDeviceinformation.differential = deviceInformationData['differential']
+            newDeviceinformation.offset = 0
+            newDeviceinformation.uploadDate = deviceInformationData['uploadDate']
+            # print(newDeviceinformation)
+            # letters = string.digits
+            # s = ( ''.join(random.choice(letters) for i in range(1)) )
 
-        serializer = DeviceInformationSerializer(newDeviceinformation)
+            words = [" Main Floor Kitchen", "Kid's Bathroom", "Main Dining", "Basement Kitchen","Attic"]
+            k = random.choice(words)
+
+            device_name = k
+
+            device_information = DeviceInformation.objects.create (
+                deviceId=deviceInformationData['deviceId'],
+                deviceName=device_name,
+                inflow = deviceInformationData['inflow'],
+                outflow = deviceInformationData['outflow'],
+                inPressure = deviceInformationData['inPressure'],
+                outPressure = deviceInformationData['outPressure'],
+                temperature = deviceInformationData['temperature'],
+                differential = deviceInformationData['differential'],
+                offset = 0,
+                uploadDate = deviceInformationData['uploadDate']
+                )
+            device_information.save()
+
+            serializer = DeviceInformationSerializer(newDeviceinformation)
+
+
         
         return Response(serializer.data)        
     
